@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Host Dashboard — RoomLagbe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-0">Dashboard</h3>
+            <p class="text-muted small mb-0">স্বাগতম, {{ user.get_full_name|default:user.username }}!</p>
+        </div>
+        <a href="{% url 'add_property' %}" class="btn btn-primary-custom">
+            <i class="fa-solid fa-plus me-2"></i>Add Property
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="bg-white rounded-3 p-3 shadow-sm text-center">
+                <div style="font-size:1.8rem;font-weight:800;color:var(--primary);">{{ total_properties }}</div>
+                <div class="small text-muted">Total Properties</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="bg-white rounded-3 p-3 shadow-sm text-center">
+                <div style="font-size:1.8rem;font-weight:800;color:#00a699;">{{ approved_count }}</div>
+                <div class="small text-muted">Approved</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="bg-white rounded-3 p-3 shadow-sm text-center">
+                <div style="font-size:1.8rem;font-weight:800;color:#ff9500;">{{ pending_count }}</div>
+                <div class="small text-muted">Pending Review</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="bg-white rounded-3 p-3 shadow-sm text-center">
+                <div style="font-size:1.8rem;font-weight:800;color:#e83e8c;">{{ pending_inquiries }}</div>
+                <div class="small text-muted">New Inquiries</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Status -->
+    {% if not user.is_verified_host %}
+    <div class="alert alert-warning d-flex align-items-center gap-3 rounded-3" style="border:none;">
+        <i class="fa-solid fa-triangle-exclamation fa-lg"></i>
+        <div>
+            <strong>ভেরিফিকেশন পেন্ডিং</strong> —
+            আপনার NID ও ফোন নম্বর Admin ভেরিফাই করলে Verified Host badge পাবেন।
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Properties Table -->
+    <div class="bg-white rounded-4 shadow-sm overflow-hidden">
+        <div class="p-3 border-bottom">
+            <h5 class="fw-bold mb-0">আপনার Properties</h5>
+        </div>
+        {% if properties %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background:#f8f8f8;">
+                    <tr class="small text-muted">
+                        <th class="px-3 py-3">Property</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Views</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in properties %}
+                    <tr>
+                        <td class="px-3 py-3">
+                            <div class="fw-medium small">{{ p.title }}</div>
+                            <div class="text-muted" style="font-size:0.78rem;"><i class="fa-solid fa-location-dot me-1"></i>{{ p.area }}</div>
+                        </td>
+                        <td><span class="badge rounded-pill" style="background:#f0f0f0;color:#555;">{{ p.get_property_type_display }}</span></td>
+                        <td class="fw-bold small">৳{{ p.price|floatformat:0 }}</td>
+                        <td>
+                            {% if p.is_approved %}
+                                <span class="badge rounded-pill" style="background:#dcfce7;color:#16a34a;">✓ Live</span>
+                            {% else %}
+                                <span class="badge rounded-pill" style="background:#fef9c3;color:#ca8a04;">⏳ Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="small text-muted">{{ p.views_count }}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'property_detail' p.slug %}" class="btn btn-sm btn-outline-secondary rounded-pill" title="View">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{% url 'edit_property' p.slug %}" class="btn btn-sm btn-outline-primary rounded-pill" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <form method="POST" action="{% url 'delete_property' p.slug %}" class="d-inline"
+                                      onsubmit="return confirm('সত্যিই ডিলিট করবেন?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="fa-solid fa-house fa-3x mb-3"></i>
+            <p>এখনো কোনো Property যোগ করেননি।</p>
+            <a href="{% url 'add_property' %}" class="btn btn-primary-custom btn-sm">প্রথম Property যোগ করুন</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

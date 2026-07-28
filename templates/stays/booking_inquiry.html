@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}বুকিং রিকোয়েস্ট — {{ property.title }} — RoomLagbe{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .flatpickr-day.booked-date {
+        background: #fde2e2 !important;
+        color: #c0392b !important;
+        border-color: #fde2e2 !important;
+        text-decoration: line-through;
+    }
+    .legend-dot {
+        display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+        margin-right: 6px; vertical-align: middle;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none" style="color:var(--primary);">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'property_detail' property.slug %}" class="text-decoration-none" style="color:var(--primary);">{{ property.title }}</a></li>
+            <li class="breadcrumb-item active">বুকিং রিকোয়েস্ট</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left: Availability Calendar -->
+        <div class="col-lg-6">
+            <div class="rounded-4 p-4 bg-white shadow-sm">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-calendar-days me-2" style="color:var(--primary);"></i>এভেইলেবিলিটি ক্যালেন্ডার</h5>
+                <div id="availabilityCalendar"></div>
+                <div class="mt-3 small text-muted">
+                    <span class="legend-dot" style="background:#fde2e2;"></span>বুক করা (Unavailable)
+                    <span class="legend-dot ms-3" style="background:#fff;border:1px solid #ddd;"></span>খালি আছে
+                </div>
+                {% if property.get_confirmed_bookings %}
+                <hr>
+                <p class="small fw-bold mb-2">বর্তমান কনফার্মড বুকিং:</p>
+                <ul class="small text-muted mb-0 ps-3">
+                    {% for b in property.get_confirmed_bookings %}
+                    <li>{{ b.check_in|date:"d M, Y" }} — {{ b.check_out|date:"d M, Y" }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Inquiry Form -->
+        <div class="col-lg-6">
+            <div class="rounded-4 p-4 bg-white shadow-sm">
+                <h5 class="fw-bold mb-1">{{ property.title }}</h5>
+                <p class="text-muted small mb-3">{{ property.area }}, {{ property.city }} · ৳{{ property.price|floatformat:0 }}
+                    {% if property.price_type == 'per_night' %}/ রাত{% elif property.price_type == 'per_month' %}/ মাস{% elif property.price_type == 'per_hour' %}/ ঘণ্টা{% elif property.price_type == 'per_day' %}/ দিন{% endif %}
+                </p>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">{{ form.guest_name.label }}</label>
+                        {{ form.guest_name }}
+                        {% for error in form.guest_name.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">{{ form.guest_phone.label }}</label>
+                        {{ form.guest_phone }}
+                        {% for error in form.guest_phone.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-medium">{{ form.check_in.label }}</label>
+                            {{ form.check_in }}
+                            {% for error in form.check_in.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-medium">{{ form.check_out.label }}</label>
+                            {{ form.check_out }}
+                            {% for error in form.check_out.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">{{ form.message.label }}</label>
+                        {{ form.message }}
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100" style="border-radius:12px;">
+                        <i class="fa-solid fa-paper-plane me-2"></i>বুকিং রিকোয়েস্ট পাঠান
+                    </button>
+                </form>
+
+                {% if property.owner.phone_number %}
+                <a href="{{ property.whatsapp_link }}" target="_blank" class="btn-whatsapp mt-3" style="border-radius:12px;">
+                    <i class="fa-brands fa-whatsapp me-2"></i>WhatsApp-এ সরাসরি যোগাযোগ করুন
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    const bookedRanges = {{ booked_ranges_json|safe }};
+
+    // booked date list বানানো (প্রতিটা রেঞ্জের প্রতিটা দিন) — flatpickr disable-এর জন্য
+    function expandRange(start, end) {
+        const dates = [];
+        let cur = new Date(start);
+        const last = new Date(end);
+        while (cur < last) {
+            dates.push(new Date(cur).toISOString().split('T')[0]);
+            cur.setDate(cur.getDate() + 1);
+        }
+        return dates;
+    }
+
+    let disabledDates = [];
+    bookedRanges.forEach(r => {
+        disabledDates = disabledDates.concat(expandRange(r.start, r.end));
+    });
+
+    function markBookedDays(dObj, dStr, fp) {
+        Array.from(fp.calendarContainer.querySelectorAll('.flatpickr-day')).forEach(dayEl => {
+            const dateStr = dayEl.dateObj ? dayEl.dateObj.toISOString().split('T')[0] : null;
+            if (dateStr && disabledDates.includes(dateStr)) {
+                dayEl.classList.add('booked-date');
+            }
+        });
+    }
+
+    // Inline read-only calendar দেখানোর জন্য
+    flatpickr("#availabilityCalendar", {
+        inline: true,
+        minDate: "today",
+        disable: disabledDates,
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+            if (disabledDates.includes(dateStr)) {
+                dayElem.classList.add('booked-date');
+                dayElem.title = "ইতিমধ্যে বুক করা";
+            }
+        }
+    });
+
+    // ফর্মের check_in / check_out ইনপুটেও একই booked dates disable করা
+    flatpickr("#id_check_in", { minDate: "today", disable: disabledDates, dateFormat: "Y-m-d" });
+    flatpickr("#id_check_out", { minDate: "today", disable: disabledDates, dateFormat: "Y-m-d" });
+</script>
+{% endblock %}

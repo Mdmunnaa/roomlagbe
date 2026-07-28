@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}RoomLagbe — Find Your Perfect Stay in Bangladesh{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ── -->
+<section style="background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.35) 100%),
+    url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+    min-height: 440px; display:flex; align-items:center; position:relative; border-radius: 0 0 28px 28px;">
+    <div class="container text-white text-center py-5">
+        <h1 class="fw-bold mb-3" style="font-size:clamp(1.8rem,4vw,3rem); text-shadow:0 2px 12px rgba(0,0,0,0.3);">
+            Find Your Perfect Stay in Bangladesh
+        </h1>
+        <p class="mb-5 opacity-90" style="font-size:1.1rem;">Hotels · Sublet · Family Flats · Transit Stay — সব এক জায়গায়</p>
+
+        <!-- Search Form -->
+        <div class="mx-auto" style="max-width:720px;">
+            <form action="{% url 'search_results' %}" method="GET"
+                  style="background:white; border-radius:16px; padding:16px 20px; box-shadow:0 12px 40px rgba(0,0,0,0.2);">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-0 text-muted">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </span>
+                            <input name="q" type="text" class="form-control border-0 shadow-none"
+                                   placeholder="কোথায় থাকতে চান? (Banani, Mirpur...)"
+                                   value="{{ query }}" style="font-size:0.9rem;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="type" class="form-select border-0 shadow-none" style="font-size:0.9rem;">
+                            <option value="">সব ধরনের Stay</option>
+                            <option value="hotel" {% if prop_type == 'hotel' %}selected{% endif %}>🏨 Hotel / Guest House</option>
+                            <option value="sublet" {% if prop_type == 'sublet' %}selected{% endif %}>🚪 Sublet Room</option>
+                            <option value="flat" {% if prop_type == 'flat' %}selected{% endif %}>🏠 Family Flat</option>
+                            <option value="single" {% if prop_type == 'single' %}selected{% endif %}>🛏️ Single Room</option>
+                            <option value="transit" {% if prop_type == 'transit' %}selected{% endif %}>⏰ Transit Stay</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary-custom w-100">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- ── Category Pills ── -->
+<section class="bg-white border-bottom">
+    <div class="container">
+        <div class="d-flex gap-1 overflow-auto py-3" style="scrollbar-width:none;">
+            <a href="{% url 'search_results' %}" class="cat-pill {% if not prop_type %}active{% endif %}">
+                <i class="fa-solid fa-border-all"></i><span>All Stays</span>
+            </a>
+            <a href="{% url 'search_results' %}?type=hotel" class="cat-pill {% if prop_type == 'hotel' %}active{% endif %}">
+                <i class="fa-solid fa-hotel"></i><span>Hotels</span>
+            </a>
+            <a href="{% url 'search_results' %}?type=sublet" class="cat-pill {% if prop_type == 'sublet' %}active{% endif %}">
+                <i class="fa-solid fa-door-open"></i><span>Sublet</span>
+            </a>
+            <a href="{% url 'search_results' %}?type=flat" class="cat-pill {% if prop_type == 'flat' %}active{% endif %}">
+                <i class="fa-solid fa-house-user"></i><span>Family Flat</span>
+            </a>
+            <a href="{% url 'search_results' %}?type=single" class="cat-pill {% if prop_type == 'single' %}active{% endif %}">
+                <i class="fa-solid fa-bed"></i><span>Single Room</span>
+            </a>
+            <a href="{% url 'search_results' %}?type=transit" class="cat-pill {% if prop_type == 'transit' %}active{% endif %}">
+                <i class="fa-solid fa-clock"></i><span>Transit Stay</span>
+            </a>
+            <a href="{% url 'search_results' %}?female_safe=1" class="cat-pill" style="color:#e83e8c;">
+                <i class="fa-solid fa-shield-heart" style="color:#e83e8c;"></i><span>Female Safe</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Featured Properties ── -->
+{% if featured %}
+<section class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="section-title">⭐ Featured Stays</h2>
+        <a href="{% url 'search_results' %}" class="text-decoration-none small fw-medium" style="color:var(--primary);">View All →</a>
+    </div>
+    <div class="section-divider"></div>
+    <div class="row g-4">
+        {% for p in featured %}
+        <div class="col-sm-6 col-lg-4">
+            {% include 'stays/_property_card.html' with property=p %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Recent Listings ── -->
+{% if recent %}
+<section class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="section-title">🔥 Latest Listings</h2>
+        <a href="{% url 'search_results' %}" class="text-decoration-none small fw-medium" style="color:var(--primary);">View All →</a>
+    </div>
+    <div class="section-divider"></div>
+    <div class="row g-4">
+        {% for p in recent %}
+        <div class="col-sm-6 col-lg-4">
+            {% include 'stays/_property_card.html' with property=p %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Female Safe Section ── -->
+{% if female_safe %}
+<section class="py-5" style="background: linear-gradient(135deg, #fff0f6 0%, #fce4ec 100%);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="section-title">🛡️ Female Safe Stays</h2>
+            <a href="{% url 'search_results' %}?female_safe=1" class="text-decoration-none small fw-medium" style="color:#e83e8c;">View All →</a>
+        </div>
+        <div class="section-divider" style="background:#e83e8c;"></div>
+        <div class="row g-4">
+            {% for p in female_safe %}
+            <div class="col-sm-6 col-lg-3">
+                {% include 'stays/_property_card.html' with property=p %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Empty State ── -->
+{% if not featured and not recent %}
+<section class="container my-5 text-center py-5">
+    <i class="fa-solid fa-house-circle-xmark fa-4x text-muted mb-4"></i>
+    <h4 class="text-muted">এখনো কোনো প্রপার্টি নেই</h4>
+    <p class="text-muted">Admin প্যানেল থেকে কিছু প্রপার্টি অ্যাপ্রুভ করুন।</p>
+    <a href="/admin/" class="btn btn-primary-custom mt-2">Go to Admin</a>
+</section>
+{% endif %}
+
+<!-- ── CTA Banner ── -->
+<section class="container my-5">
+    <div class="rounded-4 p-5 text-white text-center"
+         style="background: linear-gradient(135deg, #ff385c 0%, #e31c5f 100%); box-shadow: 0 8px 30px rgba(255,56,92,0.3);">
+        <h3 class="fw-bold mb-2">আপনার রুম বা হোটেল লিস্ট করুন</h3>
+        <p class="mb-4 opacity-90">হাজারো ট্রাভেলারের কাছে পৌঁছান — সম্পূর্ণ বিনামূল্যে শুরু করুন!</p>
+        <a href="{% url 'register_host' %}" class="btn btn-light fw-bold px-5 py-2 rounded-pill"
+           style="color: var(--primary);">List Your Property Now →</a>
+    </div>
+</section>
+
+{% endblock %}

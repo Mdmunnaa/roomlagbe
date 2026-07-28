@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RoomLagbe — Stay Marketplace Bangladesh{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff385c;
+            --primary-dark: #e31c5f;
+            --secondary: #222222;
+            --accent: #00a699;
+            --light-bg: #f7f7f7;
+            --card-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            --card-hover-shadow: 0 14px 32px rgba(0,0,0,0.14);
+            --radius: 16px;
+            --font: 'Poppins', sans-serif;
+        }
+
+        * { font-family: var(--font); }
+        body { background: var(--light-bg); color: var(--secondary); }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: #fff;
+            padding: 14px 0;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary) !important;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .brand-logo span { color: var(--secondary); }
+        .nav-link { color: #444 !important; font-weight: 500; font-size: 0.9rem; }
+        .nav-link:hover { color: var(--primary) !important; }
+        .btn-host {
+            background: var(--primary);
+            color: white !important;
+            border-radius: 8px;
+            padding: 8px 18px !important;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .btn-host:hover { background: var(--primary-dark); }
+        .btn-login {
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            padding: 7px 18px !important;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        /* ── Cards ── */
+        .property-card {
+            border: none;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #fff;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .property-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--card-hover-shadow);
+        }
+        .property-img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+        }
+        .badge-type {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .badge-female {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #e83e8c;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        .badge-featured {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ff9500;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        .card-body { padding: 14px 16px 16px; }
+        .card-title { font-weight: 700; font-size: 0.97rem; margin-bottom: 4px; }
+        .card-location { color: #717171; font-size: 0.82rem; }
+        .card-price { font-weight: 700; font-size: 1.05rem; color: #222; }
+        .card-price span { font-weight: 400; color: #717171; font-size: 0.85rem; }
+        .verified-badge { color: #00a699; font-size: 0.78rem; font-weight: 600; }
+
+        /* ── Buttons ── */
+        .btn-primary-custom {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 12px 28px;
+            transition: 0.2s;
+        }
+        .btn-primary-custom:hover { background: var(--primary-dark); color: white; }
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 12px 24px;
+            width: 100%;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-whatsapp:hover { background: #128c7e; color: white; }
+
+        /* ── Section Titles ── */
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        .section-divider {
+            width: 40px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+            margin-bottom: 24px;
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: #fff;
+            border-top: 1px solid #eee;
+            padding: 40px 0 24px;
+            margin-top: 60px;
+        }
+        .footer-brand {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* ── Alerts ── */
+        .alert { border-radius: 10px; border: none; }
+
+        /* ── Form Styling ── */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e0e0e0;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,56,92,0.12);
+        }
+        label { font-weight: 500; font-size: 0.88rem; margin-bottom: 5px; }
+
+        /* ── Category pills ── */
+        .cat-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: #777;
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .cat-pill i { font-size: 1.3rem; }
+        .cat-pill:hover, .cat-pill.active {
+            color: #222;
+            border-bottom-color: #222;
+        }
+
+        /* No image placeholder */
+        .no-img-placeholder {
+            width: 100%;
+            height: 210px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 2rem;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="brand-logo" href="{% url 'home' %}">
+            <i class="fa-solid fa-bed me-1"></i>Room<span>Lagbe</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'search_results' %}?type=hotel">Hotels</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'search_results' %}?type=sublet">Sublet</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'search_results' %}?type=transit">Transit Stay</a></li>
+                <li class="nav-item"><a class="nav-link px-3" href="{% url 'search_results' %}?female_safe=1">🛡️ Female Safe</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+                {% if user.is_authenticated %}
+                    {% if user.role == 'host' or user.role == 'admin' %}
+                        <a href="{% url 'host_dashboard' %}" class="nav-link px-2">
+                            <i class="fa-solid fa-gauge-high me-1"></i>Dashboard
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'inbox' %}" class="nav-link px-2 position-relative">
+                        <i class="fa-solid fa-comments me-1"></i>Inbox
+                        {% if unread_messages_count %}
+                        <span class="badge rounded-pill bg-danger" style="font-size:0.65rem; vertical-align:top;">{{ unread_messages_count }}</span>
+                        {% endif %}
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-login dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-user me-1"></i>{{ user.first_name|default:user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius:12px;">
+                            <li><a class="dropdown-item" href="{% url 'host_dashboard' %}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inbox' %}">Inbox {% if unread_messages_count %}({{ unread_messages_count }}){% endif %}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link btn btn-login px-3">Login</a>
+                    <a href="{% url 'register_host' %}" class="nav-link btn-host">List Your Property</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }} alert-dismissible fade show py-2" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <div class="footer-brand mb-2"><i class="fa-solid fa-bed me-1"></i>RoomLagbe</div>
+                <p class="text-muted small mb-0">Bangladesh-এর সেরা Stay Marketplace। Hotels, Sublet, Transit Stay — সব এক জায়গায়।</p>
+            </div>
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-3">Browse</h6>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-1"><a href="{% url 'search_results' %}?type=hotel" class="text-muted text-decoration-none">Hotels</a></li>
+                    <li class="mb-1"><a href="{% url 'search_results' %}?type=sublet" class="text-muted text-decoration-none">Sublet Rooms</a></li>
+                    <li class="mb-1"><a href="{% url 'search_results' %}?type=flat" class="text-muted text-decoration-none">Family Flats</a></li>
+                    <li class="mb-1"><a href="{% url 'search_results' %}?type=transit" class="text-muted text-decoration-none">Transit Stay</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-3">Host</h6>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-1"><a href="{% url 'register_host' %}" class="text-muted text-decoration-none">List Property</a></li>
+                    <li class="mb-1"><a href="{% url 'host_dashboard' %}" class="text-muted text-decoration-none">Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold mb-3">Contact</h6>
+                <p class="small text-muted mb-1"><i class="fa-brands fa-whatsapp me-2 text-success"></i>WhatsApp Support</p>
+                <p class="small text-muted"><i class="fa-solid fa-envelope me-2"></i>hello@roomlagbe.com.bd</p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <p class="text-center text-muted small mb-0">© 2026 RoomLagbe Bangladesh. Built with Django & Bootstrap 5.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

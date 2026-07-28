@@ -1,0 +1,65 @@
+<div class="property-card h-100">
+    <a href="{% url 'property_detail' property.slug %}" class="text-decoration-none text-dark">
+        <div class="position-relative">
+            {% if property.cover_image %}
+                <img src="{{ property.cover_image.image.url }}" class="property-img" alt="{{ property.title }}">
+            {% else %}
+                <div class="no-img-placeholder">
+                    <i class="fa-solid fa-image"></i>
+                </div>
+            {% endif %}
+
+            <span class="badge-type">
+                {% if property.property_type == 'hotel' %}<i class="fa-solid fa-hotel me-1"></i>Hotel
+                {% elif property.property_type == 'sublet' %}<i class="fa-solid fa-door-open me-1"></i>Sublet
+                {% elif property.property_type == 'flat' %}<i class="fa-solid fa-house-user me-1"></i>Flat
+                {% elif property.property_type == 'single' %}<i class="fa-solid fa-bed me-1"></i>Single Room
+                {% elif property.property_type == 'transit' %}<i class="fa-solid fa-clock me-1"></i>Transit
+                {% endif %}
+            </span>
+
+            {% if property.is_featured %}
+                <span class="badge-featured"><i class="fa-solid fa-star me-1"></i>Featured</span>
+            {% elif property.is_female_safe %}
+                <span class="badge-female"><i class="fa-solid fa-shield-heart me-1"></i>Female Safe</span>
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <h6 class="card-title text-truncate" style="max-width:80%;">{{ property.title }}</h6>
+                {% if property.average_rating %}
+                    <small class="fw-bold"><i class="fa-solid fa-star text-warning me-1"></i>{{ property.average_rating }}</small>
+                {% endif %}
+            </div>
+
+            <p class="card-location mb-1">
+                <i class="fa-solid fa-location-dot me-1"></i>{{ property.area }}, {{ property.city }}
+            </p>
+
+            {% if property.owner.is_verified_host %}
+                <p class="verified-badge mb-2">
+                    <i class="fa-solid fa-circle-check me-1"></i>Verified Host: {{ property.owner.get_full_name|default:property.owner.username }}
+                </p>
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <div>
+                    <span class="card-price">৳ {{ property.price|floatformat:0 }}</span>
+                    <span class="card-price">
+                        {% if property.price_type == 'per_night' %}/ রাত
+                        {% elif property.price_type == 'per_month' %}/ মাস
+                        {% elif property.price_type == 'per_hour' %}/ ঘণ্টা
+                        {% elif property.price_type == 'per_day' %}/ দিন
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex gap-1">
+                    {% if property.has_wifi %}<span title="WiFi" class="text-muted"><i class="fa-solid fa-wifi fa-sm"></i></span>{% endif %}
+                    {% if property.has_ac %}<span title="AC" class="text-muted"><i class="fa-solid fa-snowflake fa-sm"></i></span>{% endif %}
+                    {% if property.has_parking %}<span title="Parking" class="text-muted"><i class="fa-solid fa-car fa-sm"></i></span>{% endif %}
+                </div>
+            </div>
+        </div>
+    </a>
+</div>

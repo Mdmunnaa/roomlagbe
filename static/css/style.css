@@ -1,0 +1,369 @@
+/* ──────────────────────────────────────────────
+   RoomLagbe - Main Stylesheet
+   Stack: Bootstrap 5 + Custom CSS
+   Font: Poppins + Hind Siliguri
+─────────────────────────────────────────────── */
+
+:root {
+    --rl-primary: #ff385c;
+    --rl-primary-dark: #e31c5f;
+    --rl-dark: #1a1a1a;
+    --rl-gray: #717171;
+    --rl-light: #f7f7f7;
+    --rl-green: #00a699;
+    --rl-pink: #e83e8c;
+    --rl-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    --rl-shadow-hover: 0 14px 32px rgba(0,0,0,0.14);
+    --rl-radius: 16px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', 'Hind Siliguri', sans-serif;
+    background-color: #fff;
+    color: var(--rl-dark);
+}
+
+/* ── NAVBAR ──────────────────────────────────── */
+.rl-navbar {
+    background: #fff !important;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 0;
+}
+
+.rl-brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--rl-primary) !important;
+    text-decoration: none;
+}
+
+/* ── BUTTONS ─────────────────────────────────── */
+.rl-btn-primary {
+    background: var(--rl-primary);
+    border: none;
+    color: #fff;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.rl-btn-primary:hover {
+    background: var(--rl-primary-dark);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255,56,92,0.35);
+}
+
+/* ── HERO ─────────────────────────────────────── */
+.rl-hero {
+    background: url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop') center/cover;
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+}
+
+.rl-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(10,10,30,0.72) 0%, rgba(10,10,30,0.45) 100%);
+}
+
+.rl-text-accent {
+    color: var(--rl-primary);
+    position: relative;
+}
+
+/* ── SEARCH CARD ─────────────────────────────── */
+.rl-search-card {
+    background: #fff;
+    border-radius: 60px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+}
+
+.rl-search-card .form-control,
+.rl-search-card .form-select {
+    border: none;
+    box-shadow: none;
+    font-size: 0.9rem;
+}
+
+.rl-search-card .form-control:focus,
+.rl-search-card .form-select:focus {
+    box-shadow: none;
+    border: none;
+}
+
+.rl-search-card .input-group-text {
+    border: none;
+}
+
+/* ── CATEGORY PILLS ──────────────────────────── */
+.rl-cat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: var(--rl-gray);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.rl-cat-pill i { font-size: 1.3rem; }
+
+.rl-cat-pill:hover {
+    color: var(--rl-dark);
+    border-bottom-color: var(--rl-dark);
+}
+
+.rl-cat-pill.active {
+    color: var(--rl-dark);
+    border-bottom-color: var(--rl-dark);
+    font-weight: 600;
+}
+
+.rl-cat-pill.female-safe { color: var(--rl-pink); }
+.rl-cat-pill.female-safe:hover { color: var(--rl-pink); border-bottom-color: var(--rl-pink); }
+
+/* ── PROPERTY CARDS ──────────────────────────── */
+.rl-property-card {
+    background: #fff;
+    border-radius: var(--rl-radius);
+    overflow: hidden;
+    border: none;
+    box-shadow: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.rl-property-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--rl-shadow-hover);
+}
+
+.rl-card-img-wrap { position: relative; overflow: hidden; }
+
+.rl-card-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.rl-property-card:hover .rl-card-img {
+    transform: scale(1.03);
+}
+
+/* Badges */
+.rl-badge-type {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.92);
+    color: var(--rl-dark);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.rl-badge-safe {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: var(--rl-pink);
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.72rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.rl-badge-featured {
+    position: absolute;
+    bottom: 12px; left: 12px;
+    background: #FFD700;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.72rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.rl-badge-pink {
+    background: var(--rl-pink);
+}
+
+/* Price */
+.rl-price-tag {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--rl-dark);
+}
+
+/* Amenity badges (small icons) */
+.rl-amenity-badge {
+    background: var(--rl-light);
+    color: var(--rl-gray);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+/* ── WHY SECTION ─────────────────────────────── */
+.rl-why-section { background: var(--rl-light); border-radius: 24px; }
+
+.py-6 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+
+.rl-feature-card {
+    background: #fff;
+    border-radius: var(--rl-radius);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.rl-feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--rl-shadow);
+}
+
+.rl-feature-icon {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #ff385c22, #ff385c11);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    color: var(--rl-primary);
+    margin: 0 auto;
+}
+
+/* ── HOST CTA BANNER ─────────────────────────── */
+.rl-host-cta {
+    background: linear-gradient(135deg, #ff385c, #e31c5f, #c41654);
+    border-radius: 24px;
+}
+
+/* ── FOOTER ──────────────────────────────────── */
+.rl-footer {
+    background: #f7f7f7;
+    border-top: 1px solid #eee;
+}
+
+/* ── PROPERTY DETAIL ─────────────────────────── */
+.rl-detail-main-img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: var(--rl-radius);
+}
+
+.rl-thumb-img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.rl-thumb-img:hover { opacity: 0.8; }
+
+.rl-booking-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: var(--rl-radius);
+    padding: 1.5rem;
+    box-shadow: var(--rl-shadow);
+}
+
+.rl-amenity-item {
+    background: var(--rl-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+}
+
+.rl-review-card {
+    background: var(--rl-light);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.rl-inquiry-form {
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* ── AUTH PAGES ──────────────────────────────── */
+.rl-auth-card {
+    background: #fff;
+    border-radius: var(--rl-radius);
+    box-shadow: var(--rl-shadow);
+    border: 1px solid #f0f0f0;
+}
+
+/* ── DASHBOARD ───────────────────────────────── */
+.rl-stat-card {
+    background: #fff;
+    border-radius: var(--rl-radius);
+    box-shadow: var(--rl-shadow);
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s;
+}
+
+.rl-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--rl-shadow-hover);
+}
+
+.rl-dashboard-table thead th {
+    background: var(--rl-light);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--rl-gray);
+    border: none;
+    padding: 12px 16px;
+}
+
+.rl-dashboard-table tbody td {
+    padding: 14px 16px;
+    border-color: #f5f5f5;
+    vertical-align: middle;
+}
+
+/* ── FORM SECTIONS ───────────────────────────── */
+.rl-form-section {
+    background: var(--rl-light);
+    border-radius: var(--rl-radius);
+    padding: 1.5rem;
+}
+
+.rl-amenity-check {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+/* ── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 768px) {
+    .rl-hero { min-height: 420px; border-radius: 0 0 20px 20px; }
+    .rl-search-card { border-radius: 20px; }
+    .rl-detail-main-img { height: 260px; }
+    .rl-host-cta { border-radius: 16px; }
+}

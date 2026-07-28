@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Register — RoomLagbe{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="bg-white rounded-4 p-4 shadow-sm">
+                <h3 class="fw-bold text-center mb-1">অ্যাকাউন্ট তৈরি করুন</h3>
+                <p class="text-muted text-center small mb-4">Guest হিসেবে Register করুন</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors.0 }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary-custom w-100 mt-2">Register</button>
+                </form>
+                <p class="text-center mt-3 small text-muted">
+                    আগেই আছেন? <a href="{% url 'login' %}" style="color:var(--primary);">Login করুন</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

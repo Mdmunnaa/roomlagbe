@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}চ্যাট — {{ other_user.first_name|default:other_user.username }} — RoomLagbe{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-window { height: 55vh; overflow-y: auto; background: #f7f5f2; border-radius: 14px; padding: 16px; }
+    .bubble { max-width: 75%; padding: 8px 14px; border-radius: 16px; margin-bottom: 8px; font-size: 0.92rem; word-wrap: break-word; }
+    .bubble.mine { background: var(--primary); color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+    .bubble.theirs { background: #fff; color: #222; margin-right: auto; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+    .bubble-time { font-size: 0.68rem; opacity: 0.7; display: block; margin-top: 2px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 700px;">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <a href="{% url 'inbox' %}" class="text-decoration-none" style="color:var(--primary);"><i class="fa-solid fa-arrow-left fa-lg"></i></a>
+        <div>
+            <h6 class="fw-bold mb-0">{{ other_user.first_name|default:other_user.username }}</h6>
+            <a href="{% url 'property_detail' conversation.property.slug %}" class="small text-decoration-none text-muted">{{ conversation.property.title }}</a>
+        </div>
+    </div>
+
+    <div id="chatWindow" class="chat-window mb-3">
+        {% for m in chat_messages %}
+        <div class="bubble {% if m.sender_id == request.user.id %}mine{% else %}theirs{% endif %}">
+            {{ m.body }}
+            <span class="bubble-time">{{ m.created_at|date:"d M, h:i A" }}</span>
+        </div>
+        {% empty %}
+        <p class="text-muted text-center small mt-4">এখনো কোনো মেসেজ নেই — প্রথম মেসেজটা তুমিই পাঠাও!</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST" id="chatForm" class="d-flex gap-2">
+        {% csrf_token %}
+        {{ form.body }}
+        <button type="submit" class="btn btn-primary-custom px-4"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+
+    <p class="small text-muted mt-3 mb-0">
+        <i class="fa-solid fa-circle-info me-1"></i>এটা RoomLagbe-এর in-app চ্যাট। জরুরি হলে
+        <a href="{{ conversation.property.whatsapp_link }}" target="_blank" class="text-decoration-none" style="color:#25D366;">WhatsApp-এও যোগাযোগ করতে পারো</a>।
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatWindow = document.getElementById('chatWindow');
+    const currentUserId = {{ request.user.id }};
+    let lastId = {% if chat_messages %}{{ chat_messages.last.id }}{% else %}0{% endif %};
+
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    function appendMessage(m) {
+        const div = document.createElement('div');
+        div.className = 'bubble ' + (m.is_mine ? 'mine' : 'theirs');
+        div.innerHTML = escapeHtml(m.body) + '<span class="bubble-time">' + m.created_at + '</span>';
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    async function pollMessages() {
+        try {
+            const res = await fetch("{% url 'conversation_messages_json' conversation.id %}?after=" + lastId);
+            const data = await res.json();
+            data.messages.forEach(m => {
+                appendMessage(m);
+                lastId = m.id;
+            });
+        } catch (e) { /* silently retry next interval */ }
+    }
+
+    setInterval(pollMessages, 4000);
+
+    // ফর্ম সাবমিটের পর ইনপুট খালি করে দেওয়া হয় সার্ভার রেসপন্স আসার আগেই — feel snappier
+    document.getElementById('chatForm').addEventListener('submit', function() {
+        setTimeout(() => { document.querySelector('#chatForm textarea').value = ''; }, 50);
+    });
+</script>
+{% endblock %}

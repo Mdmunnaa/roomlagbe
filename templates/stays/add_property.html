@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{% if edit %}Edit{% else %}Add{% endif %} Property — RoomLagbe{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="bg-white rounded-4 p-4 shadow-sm">
+                <h3 class="fw-bold mb-1">
+                    {% if edit %}✏️ Property Edit{% else %}🏠 নতুন Property যোগ করুন{% endif %}
+                </h3>
+                <p class="text-muted small mb-4">Admin অ্যাপ্রুভ করলেই সাইটে দেখাবে।</p>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3 mt-3">Basic Info</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">{{ form.title.label_tag }}{{ form.title }}</div>
+                        <div class="col-md-6">{{ form.property_type.label_tag }}{{ form.property_type }}</div>
+                        <div class="col-12">{{ form.description.label_tag }}{{ form.description }}</div>
+                    </div>
+
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3">Location</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">{{ form.area.label_tag }}{{ form.area }}</div>
+                        <div class="col-md-6">{{ form.city.label_tag }}{{ form.city }}</div>
+                        <div class="col-12">{{ form.full_address.label_tag }}{{ form.full_address }}</div>
+                        <div class="col-12">{{ form.google_map_link.label_tag }}{{ form.google_map_link }}</div>
+                    </div>
+
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3">Pricing & Room Info</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">{{ form.price.label_tag }}{{ form.price }}</div>
+                        <div class="col-md-4">{{ form.price_type.label_tag }}{{ form.price_type }}</div>
+                        <div class="col-md-4">{{ form.max_guests.label_tag }}{{ form.max_guests }}</div>
+                    </div>
+
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3">Amenities</h6>
+                    <div class="row g-2 mb-4">
+                        {% for field in form %}
+                            {% if 'has_' in field.name or 'is_female' in field.name or 'is_available' in field.name %}
+                            <div class="col-6 col-md-4">
+                                <div class="form-check p-3 rounded-3" style="background:#f8f8f8;">
+                                    {{ field }}
+                                    <label class="form-check-label small fw-medium" for="{{ field.id_for_label }}">
+                                        {{ field.label }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3">Photos</h6>
+                    <div class="mb-4">
+                        <input type="file" name="images" class="form-control" multiple accept="image/*">
+                        <small class="text-muted">Multiple ছবি select করতে Ctrl/Cmd + Click করুন। প্রথম ছবিটা Cover হবে।</small>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary-custom px-5">
+                            {% if edit %}Update Property{% else %}Submit for Review{% endif %}
+                        </button>
+                        <a href="{% url 'host_dashboard' %}" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
