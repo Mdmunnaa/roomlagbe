@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponseForbidden
 from .models import Property, CustomUser, BookingInquiry, Review, Conversation, Message
+from .locations import BD_CITIES, POPULAR_AREAS, get_areas_by_city
 from .forms import (
     CustomUserRegistrationForm, HostRegistrationForm,
     PropertyForm, BookingInquiryForm, ReviewForm, MessageForm
@@ -44,6 +45,8 @@ def home(request):
         'query': query,
         'prop_type': prop_type,
         'total_count': properties.count(),
+        'areas_by_city_json': json.dumps(get_areas_by_city(Property.objects.filter(is_approved=True))),
+        'popular_areas': POPULAR_AREAS,
     }
     return render(request, 'stays/home.html', context)
 
@@ -91,10 +94,12 @@ def property_detail(request, slug):
 
 
 def search_results(request):
-    """সার্চ রেজাল্ট পেজ — amenities filter সহ"""
+    """সার্চ রেজাল্ট পেজ — city/area (Bikroy-স্টাইল location filter) + amenities filter সহ"""
     properties = Property.objects.filter(is_approved=True, is_available=True)
 
     query = request.GET.get('q', '')
+    city = request.GET.get('city', '')
+    area = request.GET.get('area', '')
     prop_type = request.GET.get('type', '')
     min_price = request.GET.get('min_price', '')
     max_price = request.GET.get('max_price', '')
@@ -109,6 +114,10 @@ def search_results(request):
         properties = properties.filter(
             Q(title__icontains=query) | Q(area__icontains=query) | Q(city__icontains=query)
         )
+    if city:
+        properties = properties.filter(city__iexact=city)
+    if area:
+        properties = properties.filter(area__icontains=area)
     if prop_type:
         properties = properties.filter(property_type=prop_type)
     if min_price:
@@ -123,11 +132,15 @@ def search_results(request):
     context = {
         'properties': properties,
         'query': query,
+        'city': city,
+        'area': area,
         'prop_type': prop_type,
         'total': properties.count(),
         'selected_amenities': selected_amenities,
         'min_price': min_price,
         'max_price': max_price,
+        'bd_cities': BD_CITIES,
+        'areas_by_city_json': json.dumps(get_areas_by_city(Property.objects.filter(is_approved=True))),
         'amenity_options': [
             ('has_wifi', 'fa-solid fa-wifi', 'WiFi'),
             ('has_ac', 'fa-solid fa-snowflake', 'AC'),
@@ -241,7 +254,10 @@ def add_property(request):
     else:
         form = PropertyForm()
 
-    return render(request, 'stays/add_property.html', {'form': form})
+    return render(request, 'stays/add_property.html', {
+        'form': form,
+        'areas_by_city_json': json.dumps(get_areas_by_city(Property.objects.filter(is_approved=True))),
+    })
 
 
 @login_required
@@ -255,7 +271,11 @@ def edit_property(request, slug):
             return redirect('host_dashboard')
     else:
         form = PropertyForm(instance=property)
-    return render(request, 'stays/add_property.html', {'form': form, 'edit': True})
+    return render(request, 'stays/add_property.html', {
+        'form': form,
+        'edit': True,
+        'areas_by_city_json': json.dumps(get_areas_by_city(Property.objects.filter(is_approved=True))),
+    })
 
 
 @login_required

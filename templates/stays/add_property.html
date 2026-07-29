@@ -23,8 +23,11 @@
 
                     <h6 class="fw-bold text-uppercase text-muted small mb-3">Location</h6>
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6">{{ form.area.label_tag }}{{ form.area }}</div>
                         <div class="col-md-6">{{ form.city.label_tag }}{{ form.city }}</div>
+                        <div class="col-md-6">
+                            {{ form.area.label_tag }}{{ form.area }}
+                            <datalist id="area_datalist"></datalist>
+                        </div>
                         <div class="col-12">{{ form.full_address.label_tag }}{{ form.full_address }}</div>
                         <div class="col-12">{{ form.google_map_link.label_tag }}{{ form.google_map_link }}</div>
                     </div>
@@ -69,4 +72,23 @@
         </div>
     </div>
 </div>
+
+<script>
+    const areasByCity = {{ areas_by_city_json|safe }};
+    const citySelect = document.getElementById('id_city');
+    const areaInput = document.getElementById('id_area');
+    const datalist = document.getElementById('area_datalist');
+
+    function populateAreaSuggestions() {
+        const areas = areasByCity[citySelect.value] || [];
+        datalist.innerHTML = '';
+        areas.forEach(area => {
+            const opt = document.createElement('option');
+            opt.value = area;
+            datalist.appendChild(opt);
+        });
+    }
+    citySelect.addEventListener('change', populateAreaSuggestions);
+    populateAreaSuggestions(); // এডিট মোডে আগে থেকে city সিলেক্ট করা থাকলেও কাজ করবে
+</script>
 {% endblock %}

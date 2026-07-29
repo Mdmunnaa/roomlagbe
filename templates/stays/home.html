@@ -19,13 +19,18 @@
                   style="background:white; border-radius:16px; padding:16px 20px; box-shadow:0 12px 40px rgba(0,0,0,0.2);">
                 <div class="row g-2 align-items-center">
                     <div class="col-md-5">
-                        <div class="input-group">
+                        <div class="input-group position-relative">
                             <span class="input-group-text bg-transparent border-0 text-muted">
                                 <i class="fa-solid fa-location-dot"></i>
                             </span>
-                            <input name="q" type="text" class="form-control border-0 shadow-none"
+                            <input id="location_display" type="text" class="form-control border-0 shadow-none"
                                    placeholder="কোথায় থাকতে চান? (Banani, Mirpur...)"
-                                   value="{{ query }}" style="font-size:0.9rem;">
+                                   value="{{ query }}" autocomplete="off" style="font-size:0.9rem;">
+                            <input type="hidden" name="q" id="location_q" value="{{ query }}">
+                            <input type="hidden" name="city" id="location_city" value="">
+                            <input type="hidden" name="area" id="location_area" value="">
+                            <div id="location_suggestions" class="list-group position-absolute shadow-sm text-start"
+                                 style="top:105%; left:0; right:0; z-index:1050; display:none; max-height:280px; overflow-y:auto; border-radius:12px;"></div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -45,6 +50,24 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+</section>
+
+<!-- ── Popular Areas (Bikroy-style quick location chips) ── -->
+<section class="bg-white border-bottom">
+    <div class="container py-3">
+        <p class="small text-muted fw-semibold mb-2">
+            <i class="fa-solid fa-fire me-1" style="color:var(--primary);"></i>জনপ্রিয় এলাকা
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            {% for pcity, parea in popular_areas %}
+            <a href="{% url 'search_results' %}?city={{ pcity|urlencode }}&area={{ parea|urlencode }}"
+               class="text-decoration-none px-3 py-2 rounded-pill small fw-medium"
+               style="background:#f5f3ff; color:var(--primary); white-space:nowrap;">
+                <i class="fa-solid fa-location-dot me-1"></i>{{ parea }}, {{ pcity }}
+            </a>
+            {% endfor %}
         </div>
     </div>
 </section>
@@ -155,4 +178,56 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const areasByCity = {{ areas_by_city_json|safe }};
+    const allLocations = [];
+    Object.entries(areasByCity).forEach(([city, areas]) => {
+        areas.forEach(area => allLocations.push({ city, area }));
+    });
+
+    const displayInput = document.getElementById('location_display');
+    const qHidden = document.getElementById('location_q');
+    const cityHidden = document.getElementById('location_city');
+    const areaHidden = document.getElementById('location_area');
+    const box = document.getElementById('location_suggestions');
+
+    displayInput.addEventListener('input', function () {
+        const val = this.value.trim().toLowerCase();
+        qHidden.value = this.value;
+        cityHidden.value = '';
+        areaHidden.value = '';
+        if (!val) { box.style.display = 'none'; return; }
+
+        const matches = allLocations.filter(loc =>
+            loc.area.toLowerCase().includes(val) || loc.city.toLowerCase().includes(val)
+        ).slice(0, 8);
+
+        if (matches.length === 0) { box.style.display = 'none'; return; }
+
+        box.innerHTML = matches.map(loc =>
+            `<button type="button" class="list-group-item list-group-item-action loc-suggestion py-2">
+                <i class="fa-solid fa-location-dot me-2 text-muted"></i>${loc.area}<span class="text-muted">, ${loc.city}</span>
+             </button>`
+        ).join('');
+        box.style.display = 'block';
+
+        box.querySelectorAll('.loc-suggestion').forEach((btn, i) => {
+            btn.addEventListener('click', function () {
+                const loc = matches[i];
+                displayInput.value = loc.area + ', ' + loc.city;
+                cityHidden.value = loc.city;
+                areaHidden.value = loc.area;
+                qHidden.value = '';
+                box.style.display = 'none';
+            });
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target !== displayInput) box.style.display = 'none';
+    });
+</script>
 {% endblock %}

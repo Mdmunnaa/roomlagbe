@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, Property, BookingInquiry, Review, Message
+from .locations import BD_CITIES
 
 
 class CustomUserRegistrationForm(UserCreationForm):
@@ -27,22 +28,44 @@ class HostRegistrationForm(UserCreationForm):
 
 
 class PropertyForm(forms.ModelForm):
+    city = forms.ChoiceField(
+        choices=[('', 'শহর বেছে নিন')] + [(c, c) for c in BD_CITIES],
+        label='শহর',
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_city'}),
+    )
+
     class Meta:
         model = Property
         exclude = ('owner', 'slug', 'is_approved', 'is_featured', 'views_count', 'created_at', 'updated_at')
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'full_address': forms.Textarea(attrs={'rows': 2}),
-            'title': forms.TextInput(attrs={'placeholder': 'যেমন: Cozy Room in Banani Block C'}),
-            'area': forms.TextInput(attrs={'placeholder': 'যেমন: Banani, Mirpur-10'}),
-            'price': forms.NumberInput(attrs={'placeholder': 'মূল্য টাকায়'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'যেমন: Cozy Room in Banani Block C'}),
+            'property_type': forms.Select(attrs={'class': 'form-select'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'area': forms.TextInput(attrs={
+                'class': 'form-control', 'id': 'id_area', 'autocomplete': 'off',
+                'list': 'area_datalist', 'placeholder': 'আগে শহর বেছে নিন, তারপর এলাকা লিখুন/বেছে নিন',
+            }),
+            'full_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'google_map_link': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Google Maps লিংক (ঐচ্ছিক)'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'মূল্য টাকায়'}),
+            'price_type': forms.Select(attrs={'class': 'form-select'}),
+            'max_guests': forms.NumberInput(attrs={'class': 'form-control'}),
+            'total_rooms': forms.NumberInput(attrs={'class': 'form-control'}),
+            'has_wifi': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_ac': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_attached_bath': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_kitchen': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_parking': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_lift': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_cctv': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_female_safe': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
             'title': 'প্রপার্টির নাম',
             'property_type': 'ধরন',
             'description': 'বিস্তারিত',
             'area': 'এলাকা',
-            'city': 'শহর',
             'full_address': 'পূর্ণ ঠিকানা',
             'price': 'মূল্য (৳)',
             'price_type': 'মূল্যের ধরন',

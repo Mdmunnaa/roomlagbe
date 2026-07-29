@@ -6,8 +6,19 @@
     <!-- Search Bar (compact) -->
     <form action="{% url 'search_results' %}" method="GET" class="bg-white rounded-3 p-3 shadow-sm mb-4">
         <div class="row g-2 align-items-center">
-            <div class="col-md-4">
-                <input name="q" type="text" class="form-control" placeholder="এলাকা বা শহর" value="{{ query }}">
+            <div class="col-md-3">
+                <select name="city" id="filter_city" class="form-select">
+                    <option value="">সব শহর</option>
+                    {% for c in bd_cities %}
+                    <option value="{{ c }}" {% if city == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input name="area" id="filter_area" type="text" class="form-control"
+                       placeholder="এলাকা (যেমন: Banani)" value="{{ area }}"
+                       list="filter_area_datalist" autocomplete="off">
+                <datalist id="filter_area_datalist"></datalist>
             </div>
             <div class="col-md-3">
                 <select name="type" class="form-select">
@@ -19,14 +30,21 @@
                     <option value="transit" {% if prop_type == 'transit' %}selected{% endif %}>Transit Stay</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <input name="min_price" type="number" class="form-control" placeholder="Min ৳" value="{{ min_price }}">
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary-custom w-100">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>Search
+                </button>
+            </div>
+        </div>
+        <div class="row g-2 align-items-center mt-1">
+            <div class="col-md-4">
+                <input name="q" type="text" class="form-control form-control-sm" placeholder="কীওয়ার্ড (ঐচ্ছিক, যেমন: প্রপার্টির নাম)" value="{{ query }}">
             </div>
             <div class="col-md-2">
-                <input name="max_price" type="number" class="form-control" placeholder="Max ৳" value="{{ max_price }}">
+                <input name="min_price" type="number" class="form-control form-control-sm" placeholder="Min ৳" value="{{ min_price }}">
             </div>
-            <div class="col-md-1">
-                <button type="submit" class="btn btn-primary-custom w-100"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <div class="col-md-2">
+                <input name="max_price" type="number" class="form-control form-control-sm" placeholder="Max ৳" value="{{ max_price }}">
             </div>
         </div>
         <div class="mt-2 d-flex flex-wrap align-items-center gap-3">
@@ -79,4 +97,25 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const areasByCity = {{ areas_by_city_json|safe }};
+    const filterCity = document.getElementById('filter_city');
+    const filterArea = document.getElementById('filter_area');
+    const filterDatalist = document.getElementById('filter_area_datalist');
+
+    function populateFilterAreas() {
+        const areas = areasByCity[filterCity.value] || Object.values(areasByCity).flat();
+        filterDatalist.innerHTML = '';
+        [...new Set(areas)].forEach(area => {
+            const opt = document.createElement('option');
+            opt.value = area;
+            filterDatalist.appendChild(opt);
+        });
+    }
+    filterCity.addEventListener('change', populateFilterAreas);
+    populateFilterAreas();
+</script>
 {% endblock %}
